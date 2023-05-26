@@ -3,8 +3,8 @@
 
 INA219_WE ina219;
 
-float voltage_now,voltage_before,power_now = 0,power_before = 0;
-float current,vb, pwm = 0.2;
+float voltage_now = 0,voltage_before = 0,power_now = 0,power_before = 0;
+float current, pwm = 0.2;
 unsigned int sensorValue0;
 unsigned int loopTrigger;
 unsigned int com_count = 0;
@@ -43,6 +43,7 @@ void loop() {
     sampling();
 
     power_now = voltage_now*current;
+    
     if (power_now > power_before)
     {
       if (voltage_now > voltage_before)
@@ -69,16 +70,15 @@ void loop() {
     pwm_modulate(pwm);
 
 
-    power_before = power_now;
-    voltage_before = voltage_now;
-
+ //   power_before = power_now;
+ //   voltage_before = voltage_now;
    
     com_count++;
     if(com_count>=1000){
       Serial.print("Vb: ");
-      Serial.print(vb);
+      Serial.print(voltage_now);
       Serial.print("\t");
-
+      
       Serial.print("PWM: ");
       Serial.print(pwm);
       Serial.print("\t");
@@ -90,6 +90,7 @@ void loop() {
       Serial.print("Power: ");
       Serial.print(power_now);
       Serial.print("\n");
+
 
       com_count = 0;
     }
@@ -106,10 +107,9 @@ ISR(TCA0_CMP1_vect){
 
 void sampling() {
   sensorValue0 = analogRead(A0);
-  vb = sensorValue0 * (12400/2400) * (4.096/1023);
+  voltage_now = sensorValue0 * (12400/2400) * (4.096/1023);
   current = ina219.getCurrent_mA();
 }
-
 
 float saturation(float sat_input,float uplim,float lowlim) {
   if (sat_input > uplim) sat_input = uplim;

@@ -46,18 +46,41 @@ void loop() {
 
     if (power_now > power_before)
     {
-      pwm = pwm - 0.001;
+      if (voltage_now > voltage_before)
+      {
+        pwm = pwm + 0.0001;
+      }
+      else if (voltage_now < voltage_before)
+      {
+        pwm = pwm - 0.0001;
+      }
+      else
+      {
+
+      }
+
     }  
     else if (power_now < power_before)
     {
-      pwm = pwm + 0.001;
+      if (voltage_now > voltage_before)
+      {
+        pwm = pwm - 0.0001;
+      }
+      else if (voltage_now < voltage_before)
+      {
+        pwm = pwm + 0.0001;
+      }
+      else
+      {
+
+      }
     }
     else
     {
 
     }
     pwm = saturation(pwm, 0.99, 0.01);
-   // pwm = 0.6;
+   // pwm = 0.8;
     pwm_modulate(pwm);
 
 
@@ -88,12 +111,11 @@ void loop() {
       Serial.print(power_before);
       Serial.print("\n");
 
-
+      power_before = power_now;
+      voltage_before = voltage_now;
       com_count = 0;
     }
-    power_before = power_now;
   //  power_before = ;
-    voltage_before = voltage_now;
   //  voltage_before = 0.35;
     loopTrigger = 0;
   }
